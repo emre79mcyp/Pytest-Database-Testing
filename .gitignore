@@ -1,0 +1,40 @@
+# ---- Python ----
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# ---- Virtual environment ----
+venv/
+.env/
+.venv/
+
+# ---- Pytest ----
+.pytest_cache/
+.coverage
+coverage.xml
+
+# ---- Test reports ----
+report.html
+reports/
+htmlcov/
+
+# ---- SQLite databases ----
+*.db
+*.sqlite
+*.sqlite3
+
+# ---- VSCode ----
+.vscode/
+
+# ---- Environment / secrets ----
+*.env
+.env.*
+
+# ---- Logs ----
+*.log
+logs/
+
+# ---- OS files ----
+.DS_Store
+Thumbs.db
