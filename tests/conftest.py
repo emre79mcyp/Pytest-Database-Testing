@@ -8,17 +8,14 @@ def db_connection():
     """Provide database connection for tests"""
     db_path = 'database/test_data.db'
     
-    # Create database directory if doesn't exist
     os.makedirs('database', exist_ok=True)
     
-    # Create connection
     conn = sqlite3.connect(db_path)
-    conn.row_factory = sqlite3.Row  # Access columns by name
+    conn.row_factory = sqlite3.Row
     
-    # Create tables if they don't exist
     cursor = conn.cursor()
     
-    # Create users table
+    # Existing tables
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -27,7 +24,6 @@ def db_connection():
         )
     """)
     
-    # Create bookings table with foreign key - ADD STATUS COLUMN
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS bookings (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -35,24 +31,37 @@ def db_connection():
             pickup TEXT NOT NULL,
             dropoff TEXT NOT NULL,
             price DECIMAL(10,2) NOT NULL,
-            status TEXT DEFAULT 'confirmed',  -- ADD THIS COLUMN
+            status TEXT DEFAULT 'confirmed',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users (id)
         )
     """)
     
-    # Enable foreign key constraints
+    # 🆕 NEW: Analytics table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS booking_events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            booking_id INTEGER NOT NULL,
+            event_type TEXT NOT NULL,
+            revenue DECIMAL(10,2),
+            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (booking_id) REFERENCES bookings(id)
+        )
+    """)
+    
     cursor.execute("PRAGMA foreign_keys = ON")
     conn.commit()
     
     yield conn
     
-    # Cleanup after test
     conn.close()
 
 @pytest.fixture
 def clean_database(db_connection):
     """Clean database before each test"""
     cursor = db_connection.cursor()
+    # Delete in correct order (foreign keys!)
+    cursor.execute("DELETE FROM booking_events")  # Delete dependent first
     cursor.execute("DELETE FROM bookings")
     cursor.execute("DELETE FROM users")
     db_connection.commit()
