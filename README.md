@@ -1,13 +1,17 @@
 🏔️ Alps2Alps Backend QA Automation Framework
 A production-ready Python automation framework designed to validate the core booking engine, pricing logic, and analytics pipeline for the Alps2Alps transfer service.
+
 🏗️ Framework Architecture
+
 This framework utilizes a layered design to separate concerns, ensuring that the test suite remains maintainable as the product scales.
 •	Utility Layer (utils/): Stateless business logic (e.g., pricing math) that is unit-tested in isolation to ensure the "source of truth" is accurate.
 •	Fixture Layer (conftest.py): Manages the database lifecycle, session-scoped connections, and per-test "clean slate" logic.
 •	Test Layer (tests/): Domain-specific suites covering CRUD, API integration, and complex Data Pipelines.
 •	Logging Layer: Integrated structured logging (test_run.log) for full auditability during CI/CD runs.
 ________________________________________
+
 ⚙️ Core Engineering Features
+
 1. Database State & Isolation
 The framework ensures Atomic Test Execution. The clean_database fixture resets all tables before every test, preventing data "leakage."
 •	Foreign Key Enforcement: Uses PRAGMA foreign_keys = ON to ensure relational integrity.
